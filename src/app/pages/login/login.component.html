@@ -1,0 +1,114 @@
+<main class="min-h-screen flex flex-col md:flex-row">
+<!-- BEGIN: Left Section - Login Form -->
+<section class="w-full md:w-1/2 lg:w-[40%] flex items-center justify-center p-8 lg:p-16 bg-white" data-purpose="login-form-container">
+<div class="w-full max-w-md animate-fade-in">
+<!-- Branding -->
+<div class="mb-10">
+<div class="flex items-center gap-2 mb-8">
+<div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-xl">M</div>
+<span class="text-xl font-bold tracking-tight">MenuBuilder</span>
+</div>
+<h1 class="text-3xl font-bold text-slate-900 mb-2">Bem-vindo de volta</h1>
+<p class="text-slate-500">Insira suas credenciais para gerenciar seu restaurante.</p>
+</div>
+<!-- Form -->
+<form class="space-y-6" (ngSubmit)="onLogin()">
+<div data-purpose="input-group">
+<label class="block text-sm font-medium text-slate-700 mb-1" for="email">E-mail</label>
+<input class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none" id="email" name="email" placeholder="nome@restaurante.com.br" required type="email" [(ngModel)]="email" />
+</div>
+<div data-purpose="input-group">
+<div class="flex justify-between items-center mb-1">
+<label class="block text-sm font-medium text-slate-700" for="password">Senha</label>
+<a class="text-xs font-semibold text-primary hover:underline" href="#">Esqueceu a senha?</a>
+</div>
+<input class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none" id="password" name="password" placeholder="••••••••" required type="password" [(ngModel)]="password" />
+</div>
+<div class="flex items-center">
+<input class="h-4 w-4 text-primary focus:ring-primary border-slate-300 rounded" id="remember-me" name="remember-me" type="checkbox"/>
+<label class="ml-2 block text-sm text-slate-600" for="remember-me">Lembrar deste dispositivo</label>
+</div>
+<div *ngIf="errorMessage" class="p-3 rounded-lg bg-red-50 border border-red-200 text-red-600 text-sm">
+            {{ errorMessage }}
+          </div>
+<button class="w-full bg-primary hover:bg-primary-hover text-white font-semibold py-3.5 rounded-xl transition-colors shadow-lg shadow-primary/20 active:scale-[0.98] disabled:opacity-60" type="submit" [disabled]="isLoading">
+            {{ isLoading ? 'Entrando...' : 'Entrar' }}
+          </button>
+</form>
+<!-- Social Auth Separator -->
+<div class="relative my-8">
+<div class="absolute inset-0 flex items-center">
+<div class="w-full border-t border-slate-100"></div>
+</div>
+<div class="relative flex justify-center text-sm">
+<span class="px-4 bg-white text-slate-400">Ou continue com</span>
+</div>
+</div>
+<!-- Google Login -->
+<button class="w-full flex items-center justify-center gap-3 border border-slate-200 hover:bg-slate-50 py-3 rounded-xl transition-colors font-medium">
+<svg class="w-5 h-5" viewbox="0 0 24 24">
+<path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
+<path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
+<path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.24z" fill="#FBBC05"></path>
+<path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 6.27l3.66 2.84c.87-2.6 3.3-4.53 12-4.53z" fill="#EA4335"></path>
+</svg>
+          Google
+        </button>
+<!-- Footer Link -->
+<p class="mt-10 text-center text-sm text-slate-500">
+          Não tem uma conta? 
+          <a class="font-bold text-primary hover:underline" routerLink="/signup">Criar uma conta</a>
+</p>
+</div>
+</section>
+<!-- END: Left Section -->
+
+<!-- BEGIN: Right Section - Visual Slideshow -->
+<section class="hidden md:flex md:w-1/2 lg:w-[60%] bg-brand-dark relative overflow-hidden flex-col justify-center p-12 lg:p-24" data-purpose="visual-slideshow-container">
+<!-- Background Elements -->
+<div class="absolute top-0 right-0 w-full h-full opacity-20 pointer-events-none">
+<div class="absolute -top-20 -right-20 w-96 h-96 bg-primary rounded-full blur-[120px]"></div>
+<div class="absolute bottom-40 -left-20 w-72 h-72 bg-blue-600 rounded-full blur-[100px]"></div>
+</div>
+
+<!-- Slideshow Content Wrapper -->
+<div class="relative z-10 slide-show-container h-full w-full flex flex-col justify-center">
+
+<!-- Slide 1: Inventory -->
+<div class="slide-item transition-all duration-700 absolute w-full left-0 right-0 top-1/2 -translate-y-1/2" 
+     [ngClass]="{'opacity-100 translate-x-0 z-10': currentSlide === 0, 'opacity-0 translate-x-10 -z-10': currentSlide !== 0}">
+  <div class="mb-8 pl-12 lg:pl-24">
+    <span class="inline-block px-3 py-1 rounded-full bg-primary/20 text-primary text-xs font-bold tracking-widest uppercase mb-4">Gestão de Estoque</span>
+    <h2 class="text-4xl lg:text-5xl font-bold text-white leading-tight">Domine o estoque da sua cozinha com precisão.</h2>
+  </div>
+  <div class="interface-preview bg-white/5 backdrop-blur-md rounded-2xl p-4 lg:p-6 border border-white/10 mx-12 lg:mx-24">
+    <img alt="Interface de Estoque" class="rounded-xl w-full h-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDuNL3qR7iPtvHRhcl3KL2AOz3wZeEGtpFaL3uFOEn6xACrScsxYh-rsLQWAw43k9Lwy0equGF4EZNQzTVQHIMjenALCsV8P9F6K8SJMMs3uyA3TWiP1DTcAkr8dvzExZFfRp_I0rRM9h0vfl3F2aIB6p6EJf6vgzs47gaZW-ANvGzDTL71Shd86cIqZRtx614L_EvHTGlA0QiPDG3pv4zILnobWSpKuiNMsIo6lZwNfuBW_j6d-4jko2kM9SXDCDTAKwnwv3c8PvPl"/>
+  </div>
+</div>
+
+<!-- Slide 2: QR Code -->
+<div class="slide-item transition-all duration-700 absolute w-full left-0 right-0 top-1/2 -translate-y-1/2" 
+     [ngClass]="{'opacity-100 translate-x-0 z-10': currentSlide === 1, 'opacity-0 translate-x-10 -z-10': currentSlide !== 1}">
+  <div class="mb-8 pl-12 lg:pl-24">
+    <span class="inline-block px-3 py-1 rounded-full bg-blue-500/20 text-blue-400 text-xs font-bold tracking-widest uppercase mb-4">Cardápios QR Inteligentes</span>
+    <h2 class="text-4xl lg:text-5xl font-bold text-white leading-tight">Atualizações instantâneas, pedidos sem contato.</h2>
+  </div>
+  <div class="interface-preview bg-white/5 backdrop-blur-md rounded-2xl p-4 lg:p-6 border border-white/10 mx-12 lg:mx-24">
+    <img alt="Interface de QR Code" class="rounded-xl w-full h-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxxW9soVvV-wtfsdSdt_sklndl78jR8g55dSfCUsNpfQR3A9wr9CiAPvG-mvedHKfYgn2CIabOvqJSwj_PPz2HxtyZCD-1u3nQEuixZck6w4ZwNLyopFSQEOrkqUTKo--SLP9fVvU1ZuyJiuK17_bXWp2xIPAWwaOywgOfeq3fImNlHbZolGMM6H_IQmQMpGJIi7_6J2A8Zw1kfsjqAqGG9D3KAw7j6Rvn4mqYxVyP6V4AkUPhIDHnI_JabYSlUt9_JBYb_w40BWqB"/>
+  </div>
+</div>
+
+</div>
+
+<!-- Slideshow Controls -->
+<div class="absolute bottom-12 left-12 lg:left-24 z-20 flex gap-4">
+<div class="slide-indicator w-12 h-1.5 rounded-full cursor-pointer transition-all duration-300" 
+     [ngClass]="{'bg-white': currentSlide === 0, 'bg-white/30': currentSlide !== 0}" 
+     (click)="setSlide(0)"></div>
+<div class="slide-indicator w-12 h-1.5 rounded-full cursor-pointer transition-all duration-300" 
+     [ngClass]="{'bg-white': currentSlide === 1, 'bg-white/30': currentSlide !== 1}" 
+     (click)="setSlide(1)"></div>
+</div>
+</section>
+<!-- END: Right Section -->
+</main>

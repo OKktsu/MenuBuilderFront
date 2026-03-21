@@ -1,0 +1,165 @@
+<div class="flex min-h-screen flex-col lg:flex-row">
+  <!-- Left Side: Registration Form -->
+  <div class="flex w-full flex-col justify-center px-6 py-12 lg:w-[45%] lg:px-16 xl:px-24">
+    <div class="mx-auto w-full max-w-md">
+      <!-- Header/Logo Area -->
+      <div class="mb-10 flex items-center gap-3">
+        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white shadow-lg shadow-primary/20">
+          <span class="material-symbols-outlined">restaurant_menu</span>
+        </div>
+        <h1 class="text-2xl font-bold tracking-tight text-slate-900">MenuMaster</h1>
+      </div>
+      <div class="mb-8">
+        <h2 class="text-3xl font-extrabold tracking-tight text-slate-900">Crie sua conta</h2>
+        <p class="mt-2 text-slate-600">Comece a gerenciar seu restaurante com mais eficiência hoje.</p>
+      </div>
+
+      <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="space-y-5">
+        <!-- Restaurant Name -->
+        <!-- <div>
+          <label class="block text-sm font-semibold leading-6 text-slate-900" for="restaurant-name">Nome do Restaurante</label>
+          <div class="mt-2">
+            <input 
+              formControlName="restaurantName"
+              class="block w-full rounded-xl border-slate-200 py-3 text-slate-900 shadow-sm transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 bg-white sm:text-sm sm:leading-6" 
+              id="restaurant-name" 
+              placeholder="A Cozinha Gourmet" 
+              type="text"/>
+          </div>
+        </div> -->
+
+        <!-- Owner Name -->
+        <div>
+          <label class="block text-sm font-semibold leading-6 text-slate-900" for="owner-name">Nome Completo</label>
+          <div class="mt-2">
+            <input 
+              formControlName="nomeCompleto"
+              class="block w-full rounded-xl border-slate-200 py-3 text-slate-900 shadow-sm transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 bg-white sm:text-sm sm:leading-6" 
+              id="owner-name" 
+              placeholder="João Silva" 
+              type="text"/>
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div>
+          <label class="block text-sm font-semibold leading-6 text-slate-900" for="email">E-mail</label>
+          <div class="mt-2">
+            <input 
+              formControlName="email"
+              autocomplete="email" 
+              class="block w-full rounded-xl border-slate-200 py-3 text-slate-900 shadow-sm transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 bg-white sm:text-sm sm:leading-6" 
+              id="email" 
+              placeholder="joao@exemplo.com.br" 
+              type="email"/>
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div>
+          <label class="block text-sm font-semibold leading-6 text-slate-900" for="password">Senha</label>
+          <div class="mt-2">
+            <input 
+              formControlName="password"
+              class="block w-full rounded-xl border-slate-200 py-3 text-slate-900 shadow-sm transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 bg-white sm:text-sm sm:leading-6" 
+              id="password" 
+              placeholder="••••••••" 
+              type="password"/>
+          </div>
+          <p class="mt-2 text-xs text-slate-500">Deve ter pelo menos 8 caracteres.</p>
+        </div>
+
+        <!-- Terms checkbox -->
+        <div class="flex items-center">
+          <input 
+            formControlName="terms"
+            class="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary" 
+            id="terms" 
+            type="checkbox"/>
+          <label class="ml-3 block text-sm text-slate-600" for="terms">
+            Eu concordo com os <a class="font-semibold text-primary hover:text-primary/80" href="#">Termos de Serviço</a> e <a class="font-semibold text-primary hover:text-primary/80" href="#">Política de Privacidade</a>.
+          </label>
+        </div>
+
+        <!-- Submit Button -->
+        <div>
+          <button 
+            [disabled]="signupForm.invalid"
+            class="flex w-full justify-center rounded-xl bg-primary px-3 py-4 text-sm font-bold leading-6 text-white shadow-vibrant-red hover:bg-red-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed" 
+            type="submit">
+            Criar Conta
+          </button>
+        </div>
+      </form>
+
+      <!-- Footer Sign In Link -->
+      <p class="mt-10 text-center text-sm text-slate-600">
+        Já possui uma conta?
+        <a class="font-bold leading-6 text-primary hover:text-primary/80" routerLink="/login">Entrar</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- Right Side: Visual Showcase -->
+  <div class="relative hidden w-0 flex-1 lg:block">
+    <!-- Background Image with Overlay -->
+    <div class="absolute inset-0 h-full w-full bg-primary/10">
+      <img alt="Fundo do Restaurante" class="absolute inset-0 h-full w-full object-cover" data-alt="Interior de restaurante moderno com iluminação quente" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJooXblMAzcUm0OXhE6BL_xjygDFRc5aMUfmQIGSq0kg9YcHqK-n5ujbppCAhn74QqI7sM_HZ0LtPhG76zyTFhub-cZIKfaCaNDnxzFMPUsoF1FV4FRh4Fyn4CEoWqO8-puiYGGmlFwkqbAuQEtQLIzNiy4UrYfhpwiWE1g489Oy-qkWlEJBmA6vxbQp733n4GRMOBexTm07aONM_CNStLMT2pjfdXJxOOV4Uj5PTCqaSQAoRK08nXnDXTPTrvkh_zD1uACVbWoNkp"/>
+      <div class="absolute inset-0 bg-gradient-to-tr from-primary/90 via-primary/60 to-transparent"></div>
+    </div>
+    <!-- Content on Image -->
+    <div class="relative flex h-full flex-col items-center justify-center px-12 text-center text-white">
+      <div class="max-w-xl">
+        <div class="mb-8 inline-flex h-16 w-16 items-center justify-center rounded-full bg-white/20 backdrop-blur-md ring-1 ring-white/30">
+          <span class="material-symbols-outlined text-4xl">dashboard</span>
+        </div>
+        <h2 class="mb-6 text-4xl font-black leading-tight tracking-tight xl:text-5xl">
+          Otimize as operações da sua cozinha com facilidade.
+        </h2>
+        <p class="mb-10 text-lg font-medium text-white/90">
+          Junte-se a mais de 5.000 restaurantes que aumentaram sua eficiência em 40% usando o painel intuitivo do MenuMaster.
+        </p>
+
+        <!-- Dashboard Mockup Element -->
+        <div class="relative overflow-hidden rounded-2xl bg-white/10 p-4 shadow-2xl backdrop-blur-md ring-1 ring-white/20">
+          <div class="flex items-center gap-2 border-b border-white/20 pb-4 mb-4">
+            <div class="h-3 w-3 rounded-full bg-red-400/80"></div>
+            <div class="h-3 w-3 rounded-full bg-yellow-400/80"></div>
+            <div class="h-3 w-3 rounded-full bg-green-400/80"></div>
+            <div class="ml-4 h-2 w-32 rounded-full bg-white/20"></div>
+          </div>
+          <div class="grid grid-cols-3 gap-4">
+            <div class="h-24 rounded-lg bg-white/20"></div>
+            <div class="h-24 rounded-lg bg-white/20"></div>
+            <div class="h-24 rounded-lg bg-white/20"></div>
+            <div class="col-span-2 h-32 rounded-lg bg-white/20"></div>
+            <div class="h-32 rounded-lg bg-white/20"></div>
+          </div>
+          <!-- Floating Card Mockup -->
+          <div class="absolute -bottom-2 -right-2 h-24 w-48 rounded-xl bg-white p-4 shadow-xl ring-1 ring-black/5">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center">
+                <span class="material-symbols-outlined text-primary text-xs font-bold">trending_up</span>
+              </div>
+              <span class="text-[10px] font-bold text-slate-500 tracking-wider">RECEITA DIÁRIA</span>
+            </div>
+            <div class="text-xl font-bold text-slate-900">R$ 2.482,00</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Testimonial -->
+      <div class="absolute bottom-12 left-12 right-12">
+        <div class="flex justify-center gap-1 mb-2">
+          <span class="material-symbols-outlined text-white text-sm fill-1">star</span>
+          <span class="material-symbols-outlined text-white text-sm fill-1">star</span>
+          <span class="material-symbols-outlined text-white text-sm fill-1">star</span>
+          <span class="material-symbols-outlined text-white text-sm fill-1">star</span>
+          <span class="material-symbols-outlined text-white text-sm fill-1">star</span>
+        </div>
+        <p class="text-sm font-medium italic opacity-90">"A melhor decisão que tomamos para o nosso grupo de restaurantes. A configuração foi muito simples!"</p>
+        <p class="mt-2 text-xs font-bold uppercase tracking-widest text-white/80">— Marco Rossi, Trattoria Bella</p>
+      </div>
+    </div>
+  </div>
+</div>

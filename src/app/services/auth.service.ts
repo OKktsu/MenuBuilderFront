@@ -7,7 +7,7 @@ import { Observable, tap } from 'rxjs';
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'https://menubuilderback-h3gkg5gdbmgbd3c0.brazilsouth-01.azurewebsites.net/api/Auth';
+  private apiUrl = 'https://menubuilderback-h3gkg5gdbmgbd3c0.brazilsouth-01.azurewebsites.net/api';
 
   constructor(private http: HttpClient, private router: Router) { }
 

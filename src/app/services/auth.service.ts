@@ -12,11 +12,11 @@ export class AuthService {
   constructor(private http: HttpClient, private router: Router) { }
 
   signup(model: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/auth/register`, model);
+    return this.http.post(`${this.apiUrl}/Auth/register`, model);
   }
 
   login(credentials: { email: string; password: string }): Observable<any> {
-    return this.http.post(`${this.apiUrl}/auth/login`, credentials).pipe(
+    return this.http.post(`${this.apiUrl}/Auth/login`, credentials).pipe(
       tap((response: any) => {
         if (response.token) {
           localStorage.setItem('token', response.token);

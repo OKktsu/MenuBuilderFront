@@ -17,6 +17,9 @@ module.exports = {
           500: '#ef4444',
           600: '#dc2626',
           700: '#b91c1c',
+          accent: '#ef4444',
+          primary: '#0F172A',
+          secondary: '#334155',
           dark: '#0F172A',
           surface: '#F8FAFC'
         }

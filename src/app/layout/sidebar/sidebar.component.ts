@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
@@ -11,6 +11,9 @@ import { AuthService } from '../../services/auth.service';
   styleUrl: './sidebar.component.scss'
 })
 export class SidebarComponent implements OnInit {
+  @Input() isCollapsed = false;
+  @Output() toggle = new EventEmitter<void>();
+
   userName = '';
   userEmail = '';
 
@@ -26,5 +29,9 @@ export class SidebarComponent implements OnInit {
 
   onLogout() {
     this.authService.logout();
+  }
+
+  onToggle() {
+    this.toggle.emit();
   }
 }

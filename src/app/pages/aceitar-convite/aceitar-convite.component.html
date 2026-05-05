@@ -1,0 +1,121 @@
+<div class="min-h-screen flex items-center justify-center bg-slate-50 p-4">
+  <div class="w-full max-w-md">
+
+    <!-- Logo -->
+    <div class="mb-8 flex justify-center">
+      <div class="flex items-center gap-2">
+        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white shadow-lg">
+          <span class="material-symbols-outlined">restaurant_menu</span>
+        </div>
+        <span class="text-xl font-bold tracking-tight text-slate-900">MenuMaster</span>
+      </div>
+    </div>
+
+    <!-- Carregando -->
+    <div *ngIf="estado === 'carregando'"
+         class="rounded-2xl bg-white border border-slate-200 p-8 text-center shadow-sm">
+      <svg class="mx-auto animate-spin h-8 w-8 text-primary mb-4" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+      </svg>
+      <p class="text-slate-500">Verificando convite...</p>
+    </div>
+
+    <!-- Convite inválido/expirado -->
+    <div *ngIf="estado === 'invalido'"
+         class="rounded-2xl bg-white border border-slate-200 p-8 text-center shadow-sm">
+      <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-100">
+        <svg class="h-7 w-7 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </div>
+      <h2 class="text-lg font-bold text-slate-900 mb-1">Convite inválido</h2>
+      <p class="text-sm text-slate-500 mb-6">Este convite não existe, já foi usado ou expirou.</p>
+      <a routerLink="/login"
+         class="inline-block rounded-xl bg-primary px-6 py-2.5 text-sm font-bold text-white hover:bg-red-700 transition-all">
+        Ir para o Login
+      </a>
+    </div>
+
+    <!-- Convite válido -->
+    <div *ngIf="estado === 'valido' || estado === 'aceitando'"
+         class="rounded-2xl bg-white border border-slate-200 p-8 shadow-sm">
+
+      <div class="mb-6 text-center">
+        <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
+          <svg class="h-7 w-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5"/>
+          </svg>
+        </div>
+        <h2 class="text-xl font-bold text-slate-900">Você foi convidado!</h2>
+        <p class="mt-1 text-sm text-slate-500">
+          Para entrar em <strong>{{ info?.empresaNome }}</strong> como <strong>{{ info?.cargoNome }}</strong>.
+        </p>
+      </div>
+
+      <!-- Usuário logado -->
+      <ng-container *ngIf="authService.isLoggedIn(); else naoLogado">
+        <p class="text-sm text-center text-slate-600 mb-5">
+          Clique no botão abaixo para aceitar e entrar na empresa.
+        </p>
+        <button (click)="aceitar()" [disabled]="estado === 'aceitando'"
+                class="w-full flex items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-bold text-white hover:bg-red-700 transition-all disabled:opacity-60">
+          <svg *ngIf="estado === 'aceitando'" class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+          </svg>
+          {{ estado === 'aceitando' ? 'Aceitando...' : 'Aceitar Convite' }}
+        </button>
+      </ng-container>
+
+      <!-- Usuário não logado -->
+      <ng-template #naoLogado>
+        <p class="text-sm text-center text-slate-600 mb-5">
+          Para aceitar o convite, faça login ou crie uma conta.
+        </p>
+        <div class="space-y-3">
+          <a [routerLink]="['/login']" [queryParams]="{redirect: '/convite/' + token}"
+             class="flex w-full items-center justify-center rounded-xl bg-primary py-3 text-sm font-bold text-white hover:bg-red-700 transition-all">
+            Fazer Login
+          </a>
+          <a [routerLink]="['/signup']" [queryParams]="{convite: token, email: info?.email}"
+             class="flex w-full items-center justify-center rounded-xl border border-slate-200 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-all">
+            Criar Conta
+          </a>
+        </div>
+      </ng-template>
+
+    </div>
+
+    <!-- Aceito com sucesso -->
+    <div *ngIf="estado === 'aceito'"
+         class="rounded-2xl bg-white border border-slate-200 p-8 text-center shadow-sm">
+      <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-green-100">
+        <svg class="h-7 w-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+        </svg>
+      </div>
+      <h2 class="text-lg font-bold text-slate-900 mb-1">Bem-vindo!</h2>
+      <p class="text-sm text-slate-500">Você entrou na empresa. Redirecionando...</p>
+    </div>
+
+    <!-- Erro ao aceitar -->
+    <div *ngIf="estado === 'erro'"
+         class="rounded-2xl bg-white border border-slate-200 p-8 text-center shadow-sm">
+      <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-100">
+        <svg class="h-7 w-7 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+        </svg>
+      </div>
+      <h2 class="text-lg font-bold text-slate-900 mb-1">Ops!</h2>
+      <p class="text-sm text-slate-500 mb-5">{{ erroMsg }}</p>
+      <a routerLink="/home"
+         class="inline-block rounded-xl bg-primary px-6 py-2.5 text-sm font-bold text-white hover:bg-red-700 transition-all">
+        Ir para o início
+      </a>
+    </div>
+
+  </div>
+</div>

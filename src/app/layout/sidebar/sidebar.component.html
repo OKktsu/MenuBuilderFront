@@ -1,69 +1,117 @@
-<aside class="w-64 bg-white border-r border-slate-200 hidden md:flex flex-col h-full">
-  <div class="p-6">
-    <!-- Logo -->
-    <div class="flex items-center gap-2 mb-8">
-      <div class="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center">
-        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-        </svg>
+<aside class="w-full bg-white border-r border-slate-200 hidden md:flex flex-col h-full transition-all duration-300">
+  <div class="p-6 flex-1 flex flex-col min-w-0">
+    <!-- Logo & Toggle -->
+    <div class="flex items-center justify-between mb-8">
+      <div class="flex items-center gap-2 overflow-hidden">
+        <div class="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center shrink-0">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+          </svg>
+        </div>
+        <span *ngIf="!isCollapsed" class="text-xl font-bold tracking-tight text-slate-800 truncate transition-opacity duration-300">MenuMaster</span>
       </div>
-      <span class="text-xl font-bold tracking-tight text-slate-800">MenuMaster</span>
+      <button (click)="onToggle()" class="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 transition-colors">
+        <svg class="w-5 h-5 transition-transform duration-300" [class.rotate-180]="isCollapsed" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path d="M11 19l-7-7 7-7m8 14l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+        </svg>
+      </button>
     </div>
 
     <!-- Navigation -->
     <nav class="space-y-1">
       <a routerLink="/home" routerLinkActive="bg-brand-50 text-brand-600"
          [routerLinkActiveOptions]="{exact: true}"
-         class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-slate-600 hover:bg-slate-50 transition-colors">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+         class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-slate-600 hover:bg-slate-50 transition-all duration-300 group overflow-hidden"
+         [title]="isCollapsed ? 'Início' : ''">
+        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
         </svg>
-        Dashboard
+        <span *ngIf="!isCollapsed" class="truncate transition-opacity duration-300">Início</span>
       </a>
 
-      <a routerLink="/menus" routerLinkActive="bg-brand-50 text-brand-600"
-         class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-md transition-colors">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <a routerLink="/items" routerLinkActive="bg-brand-50 text-brand-600"
+         class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-md transition-all duration-300 group overflow-hidden"
+         [title]="isCollapsed ? 'Listagem de Itens' : ''">
+        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
         </svg>
-        Menu List
+        <span *ngIf="!isCollapsed" class="truncate transition-opacity duration-300">Listagem de Itens</span>
       </a>
 
       <a routerLink="/categories" routerLinkActive="bg-brand-50 text-brand-600"
-         class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-md transition-colors">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+         class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-md transition-all duration-300 group overflow-hidden"
+         [title]="isCollapsed ? 'Categorias' : ''">
+        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
         </svg>
-        Categories
+        <span *ngIf="!isCollapsed" class="truncate transition-opacity duration-300">Categorias</span>
+      </a>
+
+      <a routerLink="/builder" routerLinkActive="bg-brand-50 text-brand-600"
+         class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-md transition-all duration-300 group overflow-hidden"
+         [title]="isCollapsed ? 'Menu Studio' : ''">
+        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+        </svg>
+        <span *ngIf="!isCollapsed" class="truncate transition-opacity duration-300">Menu Studio</span>
       </a>
 
       <a routerLink="/analytics" routerLinkActive="bg-brand-50 text-brand-600"
-         class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-md transition-colors">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+         class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-md transition-all duration-300 group overflow-hidden"
+         [title]="isCollapsed ? 'Análises' : ''">
+        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
         </svg>
-        Analytics
+        <span *ngIf="!isCollapsed" class="truncate transition-opacity duration-300">Análises</span>
+      </a>
+
+      <a routerLink="/funcionarios" routerLinkActive="bg-brand-50 text-brand-600"
+         class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-md transition-all duration-300 group overflow-hidden"
+         [title]="isCollapsed ? 'Equipe' : ''">
+        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+        </svg>
+        <span *ngIf="!isCollapsed" class="truncate transition-opacity duration-300">Equipe</span>
+      </a>
+
+      <a routerLink="/cargos" routerLinkActive="bg-brand-50 text-brand-600"
+         class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-md transition-all duration-300 group overflow-hidden"
+         [title]="isCollapsed ? 'Cargos' : ''">
+        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+        </svg>
+        <span *ngIf="!isCollapsed" class="truncate transition-opacity duration-300">Cargos</span>
+      </a>
+
+      <a routerLink="/empresa" routerLinkActive="bg-brand-50 text-brand-600"
+         class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-md transition-all duration-300 group overflow-hidden"
+         [title]="isCollapsed ? 'Minha Empresa' : ''">
+        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+        </svg>
+        <span *ngIf="!isCollapsed" class="truncate transition-opacity duration-300">Minha Empresa</span>
       </a>
     </nav>
   </div>
 
   <!-- User Profile Card -->
-  <div class="mt-auto p-4 border-t border-slate-100">
-    <div class="flex items-center gap-3 p-2 bg-slate-50 rounded-lg">
-      <div class="w-10 h-10 rounded-full border border-slate-200 bg-brand-500 flex items-center justify-center text-white font-bold text-sm">
+  <div class="mt-auto p-4 border-t border-slate-100 overflow-hidden">
+    <div class="flex items-center gap-3 p-2 bg-slate-50 rounded-lg overflow-hidden">
+      <div class="w-10 h-10 rounded-full border border-slate-200 bg-brand-500 flex items-center justify-center text-white font-bold text-sm shrink-0">
         {{ userName ? userName.charAt(0).toUpperCase() : 'U' }}
       </div>
-      <div class="flex-1 min-w-0">
+      <div *ngIf="!isCollapsed" class="flex-1 min-w-0 transition-opacity duration-300">
         <p class="text-sm font-semibold text-slate-800 truncate">{{ userName || 'Usuário' }}</p>
         <p class="text-xs text-slate-500 truncate">{{ userEmail }}</p>
       </div>
     </div>
     <button (click)="onLogout()"
-            class="mt-3 w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            class="mt-3 w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-red-50 hover:text-red-600 rounded-lg transition-all duration-300 overflow-hidden"
+            [title]="isCollapsed ? 'Sair' : ''">
+      <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
       </svg>
-      Sair
+      <span *ngIf="!isCollapsed" class="truncate transition-opacity duration-300">Sair</span>
     </button>
   </div>
 </aside>

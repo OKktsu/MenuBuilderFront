@@ -15,30 +15,35 @@
       </div>
 
       <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="space-y-5">
-        <!-- Restaurant Name -->
-        <!-- <div>
-          <label class="block text-sm font-semibold leading-6 text-slate-900" for="restaurant-name">Nome do Restaurante</label>
-          <div class="mt-2">
-            <input 
-              formControlName="restaurantName"
-              class="block w-full rounded-xl border-slate-200 py-3 text-slate-900 shadow-sm transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 bg-white sm:text-sm sm:leading-6" 
-              id="restaurant-name" 
-              placeholder="A Cozinha Gourmet" 
-              type="text"/>
-          </div>
-        </div> -->
-
         <!-- Owner Name -->
         <div>
           <label class="block text-sm font-semibold leading-6 text-slate-900" for="owner-name">Nome Completo</label>
           <div class="mt-2">
-            <input 
+            <input
               formControlName="nomeCompleto"
-              class="block w-full rounded-xl border-slate-200 py-3 text-slate-900 shadow-sm transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 bg-white sm:text-sm sm:leading-6" 
-              id="owner-name" 
-              placeholder="João Silva" 
+              class="block w-full rounded-xl border-slate-200 py-3 text-slate-900 shadow-sm transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 bg-white sm:text-sm sm:leading-6"
+              id="owner-name"
+              placeholder="João Silva"
               type="text"/>
           </div>
+        </div>
+
+        <!-- Company Name (oculto no fluxo de convite) -->
+        <div *ngIf="!isConvite">
+          <label class="block text-sm font-semibold leading-6 text-slate-900" for="company-name">Nome da Empresa / Restaurante</label>
+          <div class="mt-2">
+            <input
+              formControlName="nomeEmpresa"
+              class="block w-full rounded-xl border-slate-200 py-3 text-slate-900 shadow-sm transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 bg-white sm:text-sm sm:leading-6"
+              id="company-name"
+              placeholder="A Cozinha Gourmet"
+              type="text"/>
+          </div>
+        </div>
+
+        <!-- Banner de convite -->
+        <div *ngIf="isConvite" class="rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-primary font-medium">
+          Você está criando uma conta para aceitar um convite de empresa.
         </div>
 
         <!-- Email -->

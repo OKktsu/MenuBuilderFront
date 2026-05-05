@@ -1,0 +1,191 @@
+<div class="flex h-full">
+
+  <!-- ── Lista de cargos ───────────────────────────────────────────────── -->
+  <div class="flex-1 p-6 overflow-y-auto">
+
+    <!-- Header -->
+    <div class="mb-8 flex items-start justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-bold text-slate-900">Cargos</h1>
+        <p class="mt-1 text-sm text-slate-500">Defina os cargos da sua empresa e as permissões de cada um.</p>
+      </div>
+      <button
+        (click)="abrirNovo()"
+        class="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-white hover:bg-red-700 transition-all shadow-sm">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+        Novo Cargo
+      </button>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="flex justify-center py-20">
+      <svg class="animate-spin h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+      </svg>
+    </div>
+
+    <!-- Empty state -->
+    <div *ngIf="!loading && cargos.length === 0"
+         class="flex flex-col items-center justify-center py-20 text-center">
+      <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
+        <svg class="h-8 w-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857
+               M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857
+               m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+      </div>
+      <p class="text-slate-600 font-medium">Nenhum cargo criado ainda</p>
+      <p class="mt-1 text-sm text-slate-400">Crie o primeiro cargo para começar a gerenciar permissões.</p>
+    </div>
+
+    <!-- Cards de cargos -->
+    <div *ngIf="!loading && cargos.length > 0" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div *ngFor="let cargo of cargos"
+           class="group relative rounded-2xl border border-slate-200 bg-white p-5 transition-all hover:border-primary/30 hover:shadow-md"
+           [class.border-primary]="painelAberto === cargo.id"
+           [class.ring-1]="painelAberto === cargo.id"
+           [class.ring-primary]="painelAberto === cargo.id">
+
+        <!-- Nome e total de funcionários -->
+        <div class="mb-4">
+          <h3 class="font-bold text-slate-800 text-base truncate">{{ cargo.nome }}</h3>
+          <p class="mt-0.5 text-xs text-slate-500">
+            {{ cargo.totalFuncionarios }} funcionário{{ cargo.totalFuncionarios !== 1 ? 's' : '' }}
+          </p>
+        </div>
+
+        <!-- Tags de permissões -->
+        <div class="flex flex-wrap gap-1.5 mb-5 min-h-[2rem]">
+          <ng-container *ngIf="cargo.permissoes.length > 0; else semPermissoes">
+            <span *ngFor="let p of cargo.permissoes"
+                  class="inline-block rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
+              {{ p | titlecase }}
+            </span>
+          </ng-container>
+          <ng-template #semPermissoes>
+            <span class="text-xs text-slate-400 italic">Sem permissões</span>
+          </ng-template>
+        </div>
+
+        <!-- Ações -->
+        <div class="flex items-center gap-2">
+          <button
+            (click)="abrirEdicao(cargo)"
+            class="flex-1 rounded-lg border border-slate-200 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors">
+            Editar
+          </button>
+          <button
+            (click)="confirmarExclusao(cargo)"
+            class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-red-500 hover:bg-red-50 hover:border-red-200 transition-colors">
+            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Painel lateral de criação/edição ──────────────────────────────── -->
+  <div *ngIf="painelAberto !== null"
+       class="w-96 shrink-0 border-l border-slate-200 bg-white flex flex-col overflow-y-auto">
+
+    <!-- Cabeçalho do painel -->
+    <div class="flex items-center justify-between px-6 py-5 border-b border-slate-100">
+      <h2 class="font-bold text-slate-800">{{ labelPainel }}</h2>
+      <button (click)="fecharPainel()" class="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 transition-colors">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Formulário -->
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col flex-1 p-6 gap-6">
+
+      <!-- Nome do cargo -->
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 mb-2">Nome do cargo</label>
+        <input
+          formControlName="nome"
+          type="text"
+          placeholder="Ex: Gerente, Atendente..."
+          class="block w-full rounded-xl border border-slate-200 px-4 py-3 text-slate-900 shadow-sm transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm"/>
+        <p *ngIf="form.get('nome')?.invalid && form.get('nome')?.touched"
+           class="mt-1 text-xs text-red-500">O nome é obrigatório.</p>
+      </div>
+
+      <!-- Permissões -->
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 mb-3">Permissões</label>
+        <div formGroupName="permissoes" class="space-y-2">
+          <label
+            *ngFor="let p of todasPermissoes"
+            class="flex items-start gap-3 rounded-xl border p-3 cursor-pointer transition-colors"
+            [ngClass]="temPermissao(p.valor)
+              ? 'border-primary/30 bg-primary/5'
+              : 'border-slate-200 hover:bg-slate-50'">
+            <input
+              type="checkbox"
+              [formControlName]="p.valor"
+              class="mt-0.5 h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary shrink-0"/>
+            <div>
+              <p class="text-sm font-semibold text-slate-800">{{ p.label }}</p>
+              <p class="text-xs text-slate-500 mt-0.5">{{ p.descricao }}</p>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Botão salvar -->
+      <div class="mt-auto pt-4">
+        <button
+          type="submit"
+          [disabled]="form.invalid || saving"
+          class="w-full flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-white hover:bg-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+          <svg *ngIf="saving" class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+          </svg>
+          {{ saving ? 'Salvando...' : 'Salvar Cargo' }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+</div>
+
+<!-- ── Modal de confirmação de exclusão ──────────────────────────────────── -->
+<div *ngIf="cargoParaExcluir"
+     class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+  <div class="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
+    <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
+      <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M12 9v2m0 4h.01m-6.938 4h13.856C18.48 19 19 18.552 19 18V8.414a1 1 0 00-.293-.707l-4.414-4.414A1 1 0 0013.586 3H6c-.552 0-1 .448-1 1v14c0 .552.448 1 1 1z"/>
+      </svg>
+    </div>
+    <h3 class="text-base font-bold text-slate-900">Excluir cargo</h3>
+    <p class="mt-1 text-sm text-slate-500">
+      Tem certeza que deseja excluir o cargo <strong>"{{ cargoParaExcluir.nome }}"</strong>? Esta ação não pode ser desfeita.
+    </p>
+    <div class="mt-6 flex gap-3">
+      <button
+        (click)="cancelarExclusao()"
+        class="flex-1 rounded-xl border border-slate-200 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">
+        Cancelar
+      </button>
+      <button
+        (click)="excluir()"
+        class="flex-1 rounded-xl bg-red-600 py-2.5 text-sm font-bold text-white hover:bg-red-700 transition-colors">
+        Excluir
+      </button>
+    </div>
+  </div>
+</div>

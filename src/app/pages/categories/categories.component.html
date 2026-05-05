@@ -1,0 +1,105 @@
+<app-loading-spinner *ngIf="loading" message="Carregando categorias..."></app-loading-spinner>
+
+<app-confirm-modal
+  [isOpen]="showDeleteModal"
+  title="Excluir Categoria"
+  [message]="'Deseja excluir \'' + categoryToDelete?.name + '\'?'"
+  confirmText="Excluir"
+  type="danger"
+  (confirm)="confirmDelete()"
+  (cancel)="cancelDelete()">
+</app-confirm-modal>
+
+<main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="md:flex md:items-center md:justify-between mb-8">
+    <div>
+      <h2 class="text-2xl font-bold text-gray-900">Categorias</h2>
+      <p class="mt-1 text-sm text-gray-500">Gerencie as categorias dos seus cardápios.</p>
+    </div>
+    <button (click)="openAddForm()"
+      class="mt-4 md:mt-0 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-500 text-white text-sm font-bold hover:bg-brand-600 shadow transition-all">
+      <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <path d="M12 4.5v15m7.5-7.5h-15" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+      Nova Categoria
+    </button>
+  </div>
+
+  <!-- Add form -->
+  <div *ngIf="showAddForm" class="mb-6 bg-white rounded-xl border border-brand-300 shadow-sm p-6">
+    <h3 class="text-sm font-bold text-slate-700 mb-4">Nova Categoria</h3>
+    <div class="flex flex-col sm:flex-row gap-4">
+      <input [(ngModel)]="newCategoryName" placeholder="Nome da categoria"
+        class="flex-1 px-4 py-2 rounded-lg border border-slate-200 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 text-sm"
+        (keyup.enter)="saveNewCategory()">
+      <select [(ngModel)]="newCategoryMenuId"
+        class="px-3 py-2 rounded-lg border border-slate-200 focus:border-brand-500 text-sm">
+        <option *ngFor="let menu of menus" [value]="menu.id">{{ menu.restaurantName }}</option>
+      </select>
+      <div class="flex gap-2">
+        <button (click)="cancelAdd()" class="px-4 py-2 text-sm text-slate-500 hover:text-slate-700 rounded-lg transition-all">Cancelar</button>
+        <button (click)="saveNewCategory()" [disabled]="!newCategoryName.trim()"
+          class="px-5 py-2 text-sm font-bold text-white bg-brand-500 hover:bg-brand-600 disabled:bg-slate-200 rounded-lg shadow transition-all">
+          Salvar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Groups by menu -->
+  <div *ngIf="!loading" class="space-y-6">
+    <div *ngIf="allCategories.length === 0" class="text-center py-16 text-slate-400">
+      <svg class="mx-auto h-12 w-12 text-slate-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+      </svg>
+      Nenhuma categoria encontrada. Crie um menu primeiro e depois adicione categorias.
+    </div>
+
+    <div *ngFor="let group of groups" class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+      <div class="px-6 py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+        <div>
+          <h3 class="text-base font-bold text-slate-800">{{ group.menu.restaurantName }}</h3>
+          <p class="text-xs text-slate-500 mt-0.5">{{ group.categories.length }} categorias</p>
+        </div>
+        <a [routerLink]="['/builder', group.menu.id]" class="text-xs font-bold text-brand-500 hover:text-brand-700 transition-colors">
+          Abrir no Studio →
+        </a>
+      </div>
+
+      <ul class="divide-y divide-slate-100">
+        <li *ngFor="let category of group.categories" class="flex items-center justify-between px-6 py-4 hover:bg-slate-50 transition-colors">
+          <ng-container *ngIf="editingId === category.id; else displayMode">
+            <div class="flex items-center gap-3 flex-1">
+              <input [(ngModel)]="editingName"
+                (keyup.enter)="saveEdit(category)"
+                (keyup.escape)="cancelEdit()"
+                class="text-sm font-medium text-slate-800 border border-brand-400 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-brand-500">
+              <button (click)="saveEdit(category)" class="text-xs font-bold text-brand-600 hover:text-brand-800 px-2">Salvar</button>
+              <button (click)="cancelEdit()" class="text-xs text-slate-400 hover:text-slate-600">Cancelar</button>
+            </div>
+          </ng-container>
+          <ng-template #displayMode>
+            <div class="flex items-center gap-3">
+              <span class="text-sm font-medium text-slate-800">{{ category.name }}</span>
+              <span class="text-xs text-slate-400 bg-slate-100 rounded-md px-2 py-0.5">
+                {{ category.items?.length || 0 }} itens
+              </span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button (click)="startEdit(category)" class="p-1.5 text-slate-400 hover:text-brand-500 hover:bg-brand-50 rounded-lg transition-all">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+              </button>
+              <button (click)="openDeleteModal(category)" class="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+              </button>
+            </div>
+          </ng-template>
+        </li>
+      </ul>
+    </div>
+  </div>
+</main>

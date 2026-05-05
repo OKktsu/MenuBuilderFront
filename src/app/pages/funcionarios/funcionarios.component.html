@@ -1,0 +1,269 @@
+<div class="p-6 max-w-4xl mx-auto">
+
+  <!-- Header -->
+  <div class="mb-6 flex items-start justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-bold text-slate-900">Equipe</h1>
+      <p class="mt-1 text-sm text-slate-500">Gerencie os funcionários e convites da sua empresa.</p>
+    </div>
+    <button (click)="abrirModalConvite()"
+            class="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-white hover:bg-red-700 transition-all shadow-sm">
+      <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+      </svg>
+      Convidar
+    </button>
+  </div>
+
+  <!-- Tabs -->
+  <div class="mb-6 flex gap-1 border-b border-slate-200">
+    <button (click)="abaAtiva = 'equipe'"
+            class="px-4 py-2.5 text-sm font-semibold transition-all border-b-2 -mb-px"
+            [ngClass]="abaAtiva === 'equipe'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-slate-500 hover:text-slate-700'">
+      Equipe
+      <span class="ml-1.5 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-600">
+        {{ funcionarios.length }}
+      </span>
+    </button>
+    <button (click)="abaAtiva = 'convites'"
+            class="px-4 py-2.5 text-sm font-semibold transition-all border-b-2 -mb-px"
+            [ngClass]="abaAtiva === 'convites'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-slate-500 hover:text-slate-700'">
+      Convites
+      <span *ngIf="convitesPendentes.length > 0"
+            class="ml-1.5 rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-bold text-yellow-700">
+        {{ convitesPendentes.length }}
+      </span>
+    </button>
+  </div>
+
+  <!-- ── Aba Equipe ──────────────────────────────────────────────────────── -->
+  <ng-container *ngIf="abaAtiva === 'equipe'">
+
+    <div *ngIf="loadingFuncionarios" class="flex justify-center py-16">
+      <svg class="animate-spin h-7 w-7 text-primary" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+      </svg>
+    </div>
+
+    <div *ngIf="!loadingFuncionarios" class="space-y-3">
+      <div *ngFor="let f of funcionarios"
+           class="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 transition-all hover:border-slate-300">
+
+        <!-- Avatar -->
+        <div class="h-10 w-10 shrink-0 rounded-full bg-primary flex items-center justify-center text-white font-bold text-sm">
+          {{ inicialNome(f.nomeCompleto) }}
+        </div>
+
+        <!-- Info -->
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <p class="font-semibold text-slate-800 truncate">{{ f.nomeCompleto }}</p>
+            <span *ngIf="f.isOwner"
+                  class="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-bold text-primary">
+              Dono
+            </span>
+          </div>
+          <p class="text-xs text-slate-500 truncate">{{ f.email }}</p>
+        </div>
+
+        <!-- Cargo -->
+        <div class="hidden sm:block text-right">
+          <span *ngIf="f.cargoNome"
+                class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
+            {{ f.cargoNome }}
+          </span>
+          <span *ngIf="!f.cargoNome && !f.isOwner"
+                class="text-xs text-slate-400 italic">Sem cargo</span>
+        </div>
+
+        <!-- Ações -->
+        <div *ngIf="!f.isOwner" class="flex items-center gap-2 shrink-0">
+          <button (click)="abrirModalCargo(f)"
+                  class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors">
+            Cargo
+          </button>
+          <button (click)="confirmarRemocao(f)"
+                  class="rounded-lg border border-slate-200 px-2 py-1.5 text-xs text-red-500 hover:bg-red-50 hover:border-red-200 transition-colors">
+            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6v1h12v-1a6 6 0 00-6-6zM21 12h-6"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- ── Aba Convites ────────────────────────────────────────────────────── -->
+  <ng-container *ngIf="abaAtiva === 'convites'">
+
+    <div *ngIf="loadingConvites" class="flex justify-center py-16">
+      <svg class="animate-spin h-7 w-7 text-primary" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+      </svg>
+    </div>
+
+    <div *ngIf="!loadingConvites && convites.length === 0"
+         class="flex flex-col items-center justify-center py-16 text-center">
+      <p class="text-slate-500 font-medium">Nenhum convite enviado ainda.</p>
+    </div>
+
+    <div *ngIf="!loadingConvites && convites.length > 0" class="space-y-3">
+      <div *ngFor="let c of convites"
+           class="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4">
+        <div class="flex-1 min-w-0">
+          <p class="font-semibold text-slate-800 truncate">{{ c.email }}</p>
+          <p class="text-xs text-slate-500">Cargo: {{ c.cargoNome }} · Expira {{ c.expiresAt | date:'dd/MM/yyyy' }}</p>
+        </div>
+        <span class="shrink-0 rounded-full px-2.5 py-1 text-xs font-bold" [ngClass]="badgeStatus(c.status)">
+          {{ c.status }}
+        </span>
+        <button *ngIf="c.status === 'Pendente'"
+                (click)="cancelarConvite(c)"
+                class="shrink-0 text-xs text-red-500 hover:underline font-semibold">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </ng-container>
+
+</div>
+
+<!-- ── Modal de Convidar ──────────────────────────────────────────────────── -->
+<div *ngIf="modalConvite"
+     class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+  <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+
+    <div class="mb-5 flex items-center justify-between">
+      <h3 class="text-base font-bold text-slate-900">Convidar Funcionário</h3>
+      <button (click)="fecharModalConvite()" class="p-1 rounded-lg hover:bg-slate-100 text-slate-400">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <ng-container *ngIf="!linkConviteGerado">
+      <form [formGroup]="conviteForm" (ngSubmit)="enviarConvite()" class="space-y-4">
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-1.5">E-mail do funcionário</label>
+          <input formControlName="email" type="email" placeholder="funcionario@email.com"
+                 class="block w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"/>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-1.5">Cargo</label>
+          <select formControlName="cargoId"
+                  class="block w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all bg-white">
+            <option [ngValue]="null" disabled>Selecione um cargo...</option>
+            <option *ngFor="let c of cargos" [ngValue]="c.id">{{ c.nome }}</option>
+          </select>
+          <p *ngIf="cargos.length === 0" class="mt-1 text-xs text-red-500">
+            Nenhum cargo criado. Crie cargos antes de convidar.
+          </p>
+        </div>
+        <div class="flex gap-3 pt-2">
+          <button type="button" (click)="fecharModalConvite()"
+                  class="flex-1 rounded-xl border border-slate-200 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">
+            Cancelar
+          </button>
+          <button type="submit" [disabled]="conviteForm.invalid || enviandoConvite || cargos.length === 0"
+                  class="flex-1 flex items-center justify-center gap-2 rounded-xl bg-primary py-2.5 text-sm font-bold text-white hover:bg-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+            <svg *ngIf="enviandoConvite" class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+            </svg>
+            {{ enviandoConvite ? 'Gerando...' : 'Gerar Convite' }}
+          </button>
+        </div>
+      </form>
+    </ng-container>
+
+    <!-- Link gerado -->
+    <ng-container *ngIf="linkConviteGerado">
+      <div class="flex flex-col items-center text-center gap-4">
+        <div class="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
+          <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+          </svg>
+        </div>
+        <div>
+          <p class="font-semibold text-slate-800">Convite criado!</p>
+          <p class="text-sm text-slate-500 mt-1">Copie o link abaixo e envie para o funcionário.</p>
+        </div>
+        <div class="w-full rounded-xl bg-slate-50 border border-slate-200 p-3 text-xs text-slate-600 break-all font-mono text-left">
+          {{ linkConviteGerado }}
+        </div>
+        <div class="flex gap-3 w-full">
+          <button (click)="copiarLink()"
+                  class="flex-1 rounded-xl bg-primary py-2.5 text-sm font-bold text-white hover:bg-red-700 transition-all">
+            Copiar Link
+          </button>
+          <button (click)="fecharModalConvite()"
+                  class="flex-1 rounded-xl border border-slate-200 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">
+            Fechar
+          </button>
+        </div>
+      </div>
+    </ng-container>
+
+  </div>
+</div>
+
+<!-- ── Modal de Troca de Cargo ────────────────────────────────────────────── -->
+<div *ngIf="modalCargo"
+     class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+  <div class="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
+    <h3 class="text-base font-bold text-slate-900 mb-1">Alterar Cargo</h3>
+    <p class="text-sm text-slate-500 mb-4">{{ modalCargo.nomeCompleto }}</p>
+
+    <select [(ngModel)]="cargoSelecionado"
+            class="block w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 mb-5 bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all">
+      <option *ngFor="let c of cargos" [ngValue]="c.id">{{ c.nome }}</option>
+    </select>
+
+    <div class="flex gap-3">
+      <button (click)="fecharModalCargo()"
+              class="flex-1 rounded-xl border border-slate-200 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">
+        Cancelar
+      </button>
+      <button (click)="salvarCargo()" [disabled]="!cargoSelecionado || salvandoCargo"
+              class="flex-1 rounded-xl bg-primary py-2.5 text-sm font-bold text-white hover:bg-red-700 transition-all disabled:opacity-50">
+        {{ salvandoCargo ? 'Salvando...' : 'Salvar' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Modal de Confirmação de Remoção ───────────────────────────────────── -->
+<div *ngIf="funcionarioParaRemover"
+     class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+  <div class="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
+    <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
+      <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6v1h12v-1a6 6 0 00-6-6zM21 12h-6"/>
+      </svg>
+    </div>
+    <h3 class="text-base font-bold text-slate-900">Remover funcionário</h3>
+    <p class="mt-1 text-sm text-slate-500">
+      Tem certeza que deseja remover <strong>{{ funcionarioParaRemover.nomeCompleto }}</strong> da empresa?
+      A conta do usuário não será excluída.
+    </p>
+    <div class="mt-6 flex gap-3">
+      <button (click)="cancelarRemocao()"
+              class="flex-1 rounded-xl border border-slate-200 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">
+        Cancelar
+      </button>
+      <button (click)="remover()"
+              class="flex-1 rounded-xl bg-red-600 py-2.5 text-sm font-bold text-white hover:bg-red-700 transition-colors">
+        Remover
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,5 +1,11 @@
 <div class="flex h-screen overflow-hidden">
-  <app-sidebar class="shrink-0"></app-sidebar>
+  <app-sidebar 
+    [isCollapsed]="isSidebarCollapsed" 
+    (toggle)="toggleSidebar()"
+    class="shrink-0 transition-all duration-300"
+    [class.w-64]="!isSidebarCollapsed"
+    [class.w-20]="isSidebarCollapsed">
+  </app-sidebar>
 
   <main class="flex-1 overflow-y-auto custom-scrollbar">
     <router-outlet></router-outlet>

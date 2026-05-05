@@ -1,0 +1,76 @@
+<app-loading-spinner *ngIf="loading" message="Carregando análises..."></app-loading-spinner>
+
+<main *ngIf="!loading" class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="mb-8">
+    <h2 class="text-2xl font-bold text-gray-900">Análises</h2>
+    <p class="mt-1 text-sm text-gray-500">Visão geral do seu cardápio digital.</p>
+  </div>
+
+  <!-- Stat cards -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+      <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Menus</p>
+      <p class="text-4xl font-black text-slate-800">{{ totalMenus }}</p>
+    </div>
+    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+      <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Categorias</p>
+      <p class="text-4xl font-black text-slate-800">{{ totalCategories }}</p>
+    </div>
+    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+      <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Itens</p>
+      <p class="text-4xl font-black text-slate-800">{{ totalItems }}</p>
+    </div>
+    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+      <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Preço Médio</p>
+      <p class="text-4xl font-black text-slate-800">R$ {{ avgPrice | number:'1.2-2' }}</p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Price extremes -->
+    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+      <h3 class="text-sm font-bold text-slate-700 mb-4">Destaques de Preço</h3>
+
+      <div *ngIf="totalItems === 0" class="text-sm text-slate-400 italic">Nenhum item cadastrado.</div>
+
+      <div *ngIf="mostExpensive" class="flex items-center gap-4 mb-4 p-3 bg-amber-50 rounded-lg border border-amber-100">
+        <img [src]="mostExpensive.imagePath || 'assets/placeholder.png'" [alt]="mostExpensive.name"
+          class="h-12 w-12 rounded-lg object-cover shrink-0">
+        <div class="flex-1 min-w-0">
+          <p class="text-xs font-bold text-amber-600 uppercase tracking-wider mb-0.5">Mais Caro</p>
+          <p class="text-sm font-bold text-slate-800 truncate">{{ mostExpensive.name }}</p>
+          <p class="text-xs text-slate-500">R$ {{ mostExpensive.price | number:'1.2-2' }}</p>
+        </div>
+      </div>
+
+      <div *ngIf="cheapest && cheapest.id !== mostExpensive?.id" class="flex items-center gap-4 p-3 bg-green-50 rounded-lg border border-green-100">
+        <img [src]="cheapest.imagePath || 'assets/placeholder.png'" [alt]="cheapest.name"
+          class="h-12 w-12 rounded-lg object-cover shrink-0">
+        <div class="flex-1 min-w-0">
+          <p class="text-xs font-bold text-green-600 uppercase tracking-wider mb-0.5">Mais Barato</p>
+          <p class="text-sm font-bold text-slate-800 truncate">{{ cheapest.name }}</p>
+          <p class="text-xs text-slate-500">R$ {{ cheapest.price | number:'1.2-2' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top tags -->
+    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+      <h3 class="text-sm font-bold text-slate-700 mb-4">Tags Mais Usadas</h3>
+
+      <div *ngIf="topTags.length === 0" class="text-sm text-slate-400 italic">Nenhuma tag cadastrada.</div>
+
+      <div class="space-y-3">
+        <div *ngFor="let entry of topTags" class="flex items-center gap-3">
+          <span class="text-sm font-medium text-slate-700 w-28 truncate shrink-0">{{ entry.tag }}</span>
+          <div class="flex-1 bg-slate-100 rounded-full h-2 overflow-hidden">
+            <div class="h-2 rounded-full bg-brand-500 transition-all"
+              [style.width.%]="(entry.count / (topTags[0]?.count || 1)) * 100">
+            </div>
+          </div>
+          <span class="text-xs font-bold text-slate-500 w-6 text-right shrink-0">{{ entry.count }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

@@ -1,0 +1,82 @@
+<!-- Estado: carregando -->
+<div *ngIf="estado === 'carregando'" class="loading-screen">
+  <div class="spinner"></div>
+  <p>Carregando cardápio...</p>
+</div>
+
+<!-- Estado: não encontrado -->
+<div *ngIf="estado === 'nao-encontrado'" class="error-screen">
+  <div class="error-icon">🍽️</div>
+  <h1>Cardápio não encontrado</h1>
+  <p>Este link pode estar incorreto ou o restaurante não está disponível.</p>
+</div>
+
+<!-- Estado: erro genérico -->
+<div *ngIf="estado === 'erro'" class="error-screen">
+  <div class="error-icon">⚠️</div>
+  <h1>Algo deu errado</h1>
+  <p>Não foi possível carregar o cardápio. Tente novamente em alguns instantes.</p>
+</div>
+
+<!-- Estado: ok -->
+<div *ngIf="estado === 'ok' && cardapio" class="cardapio-wrapper">
+
+  <!-- Cabeçalho do restaurante -->
+  <header class="restaurant-header">
+    <div class="logo-container" *ngIf="cardapio.logoUrl">
+      <img [src]="cardapio.logoUrl" [alt]="cardapio.restaurantName" class="restaurant-logo" />
+    </div>
+    <h1 class="restaurant-name">{{ cardapio.restaurantName }}</h1>
+    <p *ngIf="menuAtivo?.openingHours" class="opening-hours">
+      {{ menuAtivo!.openingHours }}
+    </p>
+  </header>
+
+  <!-- Seletor de menus (quando há mais de um) -->
+  <nav *ngIf="cardapio.menus.length > 1" class="menu-tabs">
+    <button
+      *ngFor="let menu of cardapio.menus"
+      class="menu-tab"
+      [class.active]="menu === menuAtivo"
+      (click)="selecionarMenu(menu)">
+      {{ menu.name }}
+    </button>
+  </nav>
+
+  <!-- Seletor de categorias -->
+  <nav *ngIf="menuAtivo && menuAtivo.categories.length > 0" class="category-tabs">
+    <button
+      *ngFor="let cat of menuAtivo.categories"
+      class="category-tab"
+      [class.active]="cat === categoriaAtiva"
+      (click)="selecionarCategoria(cat)">
+      {{ cat.name }}
+    </button>
+  </nav>
+
+  <!-- Itens da categoria ativa -->
+  <main *ngIf="categoriaAtiva" class="items-list">
+    <div *ngFor="let item of categoriaAtiva.items" class="item-card">
+      <div class="item-info">
+        <h3 class="item-name">{{ item.name }}</h3>
+        <p *ngIf="item.description" class="item-description">{{ item.description }}</p>
+        <p *ngIf="item.ingredients" class="item-ingredients">{{ item.ingredients }}</p>
+        <div class="item-footer">
+          <span class="item-price">{{ item.price | currency:'BRL':'symbol':'1.2-2' }}</span>
+          <div *ngIf="item.tags.length > 0" class="item-tags">
+            <span *ngFor="let tag of item.tags" class="tag">{{ tag }}</span>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="item.imageUrl" class="item-image-container">
+        <img [src]="item.imageUrl" [alt]="item.name" class="item-image" />
+      </div>
+    </div>
+  </main>
+
+  <!-- Mensagem quando a categoria está vazia -->
+  <div *ngIf="categoriaAtiva && categoriaAtiva.items.length === 0" class="empty-category">
+    <p>Nenhum item disponível nesta categoria.</p>
+  </div>
+
+</div>

@@ -83,6 +83,15 @@
         <span *ngIf="!isCollapsed" class="truncate transition-opacity duration-300">Cargos</span>
       </a>
 
+      <a routerLink="/cozinha" routerLinkActive="bg-brand-50 text-brand-600"
+         class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-md transition-all duration-300 group overflow-hidden"
+         [title]="isCollapsed ? 'Cozinha' : ''">
+        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path d="M15 11h.01M11 11h.01M7 11h.01M3 5h18a2 2 0 010 4H3a2 2 0 010-4zm2 4v8a2 2 0 002 2h10a2 2 0 002-2v-8" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        </svg>
+        <span *ngIf="!isCollapsed" class="truncate transition-opacity duration-300">Cozinha</span>
+      </a>
+
       <a routerLink="/empresa" routerLinkActive="bg-brand-50 text-brand-600"
          class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-md transition-all duration-300 group overflow-hidden"
          [title]="isCollapsed ? 'Minha Empresa' : ''">

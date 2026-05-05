@@ -29,6 +29,7 @@ export const routes: Routes = [
       { path: 'empresa', loadComponent: () => import('./pages/empresa/empresa.component').then(m => m.EmpresaComponent) },
       { path: 'cargos', loadComponent: () => import('./pages/cargos/cargos.component').then(m => m.CargosComponent) },
       { path: 'funcionarios', loadComponent: () => import('./pages/funcionarios/funcionarios.component').then(m => m.FuncionariosComponent) },
+      { path: 'cozinha', loadComponent: () => import('./pages/cozinha/cozinha.component').then(m => m.CozinhaComponent) },
       { path: '', redirectTo: 'home', pathMatch: 'full' },
     ]
   },

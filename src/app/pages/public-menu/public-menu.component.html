@@ -1,60 +1,125 @@
-<!-- Estado: carregando -->
-<div *ngIf="estado === 'carregando'" class="loading-screen">
+<!-- Carregando -->
+<div *ngIf="estado === 'carregando'" class="full-screen-state">
   <div class="spinner"></div>
   <p>Carregando cardápio...</p>
 </div>
 
-<!-- Estado: não encontrado -->
-<div *ngIf="estado === 'nao-encontrado'" class="error-screen">
-  <div class="error-icon">🍽️</div>
+<!-- Não encontrado -->
+<div *ngIf="estado === 'nao-encontrado'" class="full-screen-state">
+  <div class="state-icon">🍽️</div>
   <h1>Cardápio não encontrado</h1>
   <p>Este link pode estar incorreto ou o restaurante não está disponível.</p>
 </div>
 
-<!-- Estado: erro genérico -->
-<div *ngIf="estado === 'erro'" class="error-screen">
-  <div class="error-icon">⚠️</div>
+<!-- Erro genérico -->
+<div *ngIf="estado === 'erro'" class="full-screen-state">
+  <div class="state-icon">⚠️</div>
   <h1>Algo deu errado</h1>
   <p>Não foi possível carregar o cardápio. Tente novamente em alguns instantes.</p>
 </div>
 
-<!-- Estado: ok -->
-<div *ngIf="estado === 'ok' && cardapio" class="cardapio-wrapper">
+<!-- Informar mesa -->
+<div *ngIf="estado === 'informar-mesa'" class="full-screen-state">
+  <div *ngIf="cardapio" class="mesa-card">
+    <div class="mesa-logo" *ngIf="cardapio.logoUrl">
+      <img [src]="cardapio.logoUrl" [alt]="cardapio.restaurantName" />
+    </div>
+    <h1>{{ cardapio.restaurantName }}</h1>
+    <p class="mesa-sub">Informe o número da sua mesa para começar</p>
+    <input
+      type="text"
+      [(ngModel)]="numeroMesa"
+      placeholder="Ex: 5"
+      maxlength="20"
+      class="mesa-input"
+      (keyup.enter)="confirmarMesa()"
+      autofocus />
+    <p *ngIf="errorMsg" class="error-text">{{ errorMsg }}</p>
+    <button class="btn-primary" [disabled]="!numeroMesa.trim() || enviando" (click)="confirmarMesa()">
+      {{ enviando ? 'Abrindo...' : 'Entrar' }}
+    </button>
+  </div>
+</div>
 
-  <!-- Cabeçalho do restaurante -->
+<!-- Pedido enviado -->
+<div *ngIf="estado === 'pedido-enviado'" class="full-screen-state">
+  <div class="state-icon">✅</div>
+  <h1>Pedido enviado!</h1>
+  <p *ngIf="ultimoPedido">{{ ultimoPedido.itens.length }} {{ ultimoPedido.itens.length === 1 ? 'item' : 'itens' }} — {{ ultimoPedido.subtotal | currency:'BRL':'symbol':'1.2-2' }}</p>
+  <div class="pedido-enviado-actions">
+    <button class="btn-primary" (click)="continuarPedindo()">Continuar pedindo</button>
+    <button class="btn-secondary" (click)="verSessao()">Ver minha conta</button>
+  </div>
+</div>
+
+<!-- Resumo da sessão -->
+<div *ngIf="estado === 'sessao' && sessao" class="sessao-wrapper">
+  <header class="sessao-header">
+    <button class="btn-back" (click)="voltarAoCardapio()">← Voltar ao cardápio</button>
+    <div>
+      <h2>Mesa {{ sessao.numeroMesa }}</h2>
+      <span class="sessao-status" [class.encerrada]="sessao.status === 'Encerrada'">
+        {{ sessao.status === 'Aberta' ? 'Sessão aberta' : 'Sessão encerrada' }}
+      </span>
+    </div>
+  </header>
+
+  <div class="pedidos-list">
+    <div *ngFor="let pedido of sessao.pedidos; let i = index" class="pedido-card">
+      <div class="pedido-header">
+        <span class="pedido-num">Pedido {{ i + 1 }}</span>
+        <span class="pedido-status status-{{ pedido.status.toLowerCase() }}">{{ pedido.status }}</span>
+      </div>
+      <div class="pedido-itens">
+        <div *ngFor="let item of pedido.itens" class="pedido-item-row">
+          <span class="pi-qtd">{{ item.quantidade }}x</span>
+          <span class="pi-nome">{{ item.nomeItem }}</span>
+          <span class="pi-preco">{{ item.precoUnitario * item.quantidade | currency:'BRL':'symbol':'1.2-2' }}</span>
+        </div>
+      </div>
+      <div class="pedido-subtotal">Subtotal: {{ pedido.subtotal | currency:'BRL':'symbol':'1.2-2' }}</div>
+    </div>
+
+    <div *ngIf="sessao.pedidos.length === 0" class="empty-state">
+      <p>Nenhum pedido ainda.</p>
+    </div>
+  </div>
+
+  <div class="sessao-total">
+    <span>Total geral</span>
+    <strong>{{ sessao.total | currency:'BRL':'symbol':'1.2-2' }}</strong>
+  </div>
+
+  <div class="sessao-actions" *ngIf="sessao.status === 'Aberta'">
+    <button class="btn-primary" (click)="voltarAoCardapio()">Continuar pedindo</button>
+    <button class="btn-danger" (click)="encerrarSessao()">Encerrar sessão</button>
+  </div>
+</div>
+
+<!-- Cardápio principal -->
+<div *ngIf="estado === 'cardapio' && cardapio" class="cardapio-wrapper">
+
   <header class="restaurant-header">
     <div class="logo-container" *ngIf="cardapio.logoUrl">
       <img [src]="cardapio.logoUrl" [alt]="cardapio.restaurantName" class="restaurant-logo" />
     </div>
     <h1 class="restaurant-name">{{ cardapio.restaurantName }}</h1>
-    <p *ngIf="menuAtivo?.openingHours" class="opening-hours">
-      {{ menuAtivo!.openingHours }}
-    </p>
+    <p *ngIf="menuAtivo?.openingHours" class="opening-hours">{{ menuAtivo!.openingHours }}</p>
+    <button class="btn-ver-conta" (click)="verSessao()">Ver minha conta</button>
   </header>
 
-  <!-- Seletor de menus (quando há mais de um) -->
   <nav *ngIf="cardapio.menus.length > 1" class="menu-tabs">
-    <button
-      *ngFor="let menu of cardapio.menus"
-      class="menu-tab"
-      [class.active]="menu === menuAtivo"
-      (click)="selecionarMenu(menu)">
-      {{ menu.name }}
-    </button>
+    <button *ngFor="let menu of cardapio.menus"
+      class="menu-tab" [class.active]="menu === menuAtivo"
+      (click)="selecionarMenu(menu)">{{ menu.name }}</button>
   </nav>
 
-  <!-- Seletor de categorias -->
   <nav *ngIf="menuAtivo && menuAtivo.categories.length > 0" class="category-tabs">
-    <button
-      *ngFor="let cat of menuAtivo.categories"
-      class="category-tab"
-      [class.active]="cat === categoriaAtiva"
-      (click)="selecionarCategoria(cat)">
-      {{ cat.name }}
-    </button>
+    <button *ngFor="let cat of menuAtivo.categories"
+      class="category-tab" [class.active]="cat === categoriaAtiva"
+      (click)="selecionarCategoria(cat)">{{ cat.name }}</button>
   </nav>
 
-  <!-- Itens da categoria ativa -->
   <main *ngIf="categoriaAtiva" class="items-list">
     <div *ngFor="let item of categoriaAtiva.items" class="item-card">
       <div class="item-info">
@@ -68,15 +133,61 @@
           </div>
         </div>
       </div>
-      <div *ngIf="item.imageUrl" class="item-image-container">
-        <img [src]="item.imageUrl" [alt]="item.name" class="item-image" />
+      <div class="item-right">
+        <div *ngIf="item.imageUrl" class="item-image-container">
+          <img [src]="item.imageUrl" [alt]="item.name" class="item-image" />
+        </div>
+        <div class="qty-controls">
+          <button *ngIf="quantidadeNoCarrinho(item.id) > 0" class="qty-btn minus" (click)="removerDoCarrinho(item.id)">−</button>
+          <span *ngIf="quantidadeNoCarrinho(item.id) > 0" class="qty-num">{{ quantidadeNoCarrinho(item.id) }}</span>
+          <button class="qty-btn plus" (click)="adicionarAoCarrinho(item)">+</button>
+        </div>
       </div>
     </div>
   </main>
 
-  <!-- Mensagem quando a categoria está vazia -->
   <div *ngIf="categoriaAtiva && categoriaAtiva.items.length === 0" class="empty-category">
     <p>Nenhum item disponível nesta categoria.</p>
   </div>
 
+  <!-- Botão flutuante do carrinho -->
+  <button *ngIf="totalItensCarrinho > 0" class="cart-fab" (click)="carrinhoAberto = true">
+    <span class="cart-badge">{{ totalItensCarrinho }}</span>
+    🛒 Ver carrinho · {{ totalCarrinho | currency:'BRL':'symbol':'1.2-2' }}
+  </button>
+
+</div>
+
+<!-- Drawer do carrinho -->
+<div *ngIf="carrinhoAberto" class="cart-overlay" (click)="carrinhoAberto = false"></div>
+<div class="cart-drawer" [class.open]="carrinhoAberto">
+  <div class="cart-header">
+    <h3>Seu pedido</h3>
+    <button class="cart-close" (click)="carrinhoAberto = false">✕</button>
+  </div>
+
+  <div class="cart-items">
+    <div *ngFor="let item of itensCarrinho" class="cart-item-row">
+      <div class="ci-info">
+        <span class="ci-nome">{{ item.nome }}</span>
+        <span class="ci-preco">{{ item.preco | currency:'BRL':'symbol':'1.2-2' }} un.</span>
+      </div>
+      <div class="qty-controls small">
+        <button class="qty-btn minus" (click)="removerDoCarrinho(item.menuItemId)">−</button>
+        <span class="qty-num">{{ item.quantidade }}</span>
+        <button class="qty-btn plus" (click)="adicionarAoCarrinho({ id: item.menuItemId, name: item.nome, price: item.preco, tags: [], imageUrl: undefined, description: undefined, ingredients: undefined })">+</button>
+      </div>
+      <span class="ci-total">{{ item.preco * item.quantidade | currency:'BRL':'symbol':'1.2-2' }}</span>
+    </div>
+  </div>
+
+  <div class="cart-footer">
+    <div class="cart-total">
+      <span>Total</span>
+      <strong>{{ totalCarrinho | currency:'BRL':'symbol':'1.2-2' }}</strong>
+    </div>
+    <button class="btn-primary full-width" [disabled]="enviando" (click)="enviarPedido()">
+      {{ enviando ? 'Enviando...' : 'Enviar pedido' }}
+    </button>
+  </div>
 </div>

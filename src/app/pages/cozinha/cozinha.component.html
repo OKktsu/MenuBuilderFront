@@ -1,0 +1,64 @@
+<div class="cozinha-page">
+  <div class="page-header">
+    <h1>Cozinha</h1>
+    <button class="btn-refresh" (click)="carregar()" title="Atualizar">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </svg>
+      Atualizar
+    </button>
+  </div>
+
+  <!-- Carregando -->
+  <div *ngIf="carregando" class="empty-state">
+    <div class="spinner"></div>
+    <p>Carregando pedidos...</p>
+  </div>
+
+  <!-- Sem pedidos ativos -->
+  <div *ngIf="!carregando && pedidos.length === 0" class="empty-state">
+    <div class="empty-icon">✅</div>
+    <p>Nenhum pedido ativo no momento.</p>
+    <span class="empty-sub">Atualiza automaticamente a cada 15 segundos.</span>
+  </div>
+
+  <!-- Lista de pedidos -->
+  <div *ngIf="!carregando && pedidos.length > 0" class="pedidos-grid">
+    <div *ngFor="let pedido of pedidos; trackBy: trackById"
+         class="pedido-card"
+         [class.status-recebido]="pedido.status === 'Recebido'"
+         [class.status-empreparo]="pedido.status === 'EmPreparo'"
+         [class.status-pronto]="pedido.status === 'Pronto'">
+
+      <div class="pedido-card-header">
+        <div>
+          <span class="mesa-label">Mesa {{ pedido.numeroMesa }}</span>
+          <span class="pedido-id">#{{ pedido.id }}</span>
+        </div>
+        <span class="status-badge status-{{ pedido.status.toLowerCase() }}">{{ pedido.status }}</span>
+      </div>
+
+      <div class="pedido-itens">
+        <div *ngFor="let item of pedido.itens" class="item-row">
+          <span class="item-qtd">{{ item.quantidade }}x</span>
+          <div class="item-info">
+            <span class="item-nome">{{ item.nomeItem }}</span>
+            <span *ngIf="item.observacao" class="item-obs">{{ item.observacao }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pedido-card-footer">
+        <span class="pedido-subtotal">{{ pedido.subtotal | currency:'BRL':'symbol':'1.2-2' }}</span>
+        <button
+          *ngIf="proximoStatus(pedido)"
+          class="btn-avancar"
+          [disabled]="atualizando.has(pedido.id)"
+          (click)="avancarStatus(pedido)">
+          {{ atualizando.has(pedido.id) ? '...' : labelProximoStatus(pedido) }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

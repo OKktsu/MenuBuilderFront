@@ -1,0 +1,26 @@
+:host {
+  display: block;
+  min-height: 100%;
+  background-color: #f8fafc;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.animate-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+// Custom select arrow logic is handled in HTML via Tailwind bg-image
+// but we can add some polish to tag buttons
+.group:hover button {
+  transform: scale(1.1);
+}

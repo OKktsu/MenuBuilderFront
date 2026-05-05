@@ -1,0 +1,136 @@
+<app-loading-spinner *ngIf="loading" message="Buscando seus itens..."></app-loading-spinner>
+
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <section class="mb-8">
+    <div class="md:flex md:items-center md:justify-between">
+      <div class="flex-1 min-w-0">
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">Gestão de Itens</h2>
+        <p class="mt-1 text-sm text-gray-500">Gerencie o cardápio digital, preços e informações do seu restaurante.</p>
+      </div>
+      <div class="mt-4 flex md:mt-0 md:ml-4 gap-3">
+        <a routerLink="/items/new"
+          class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-brand-500 hover:bg-brand-600 transition-colors">
+          <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+          </svg>
+          Adicionar Item
+        </a>
+      </div>
+    </div>
+
+    <!-- Search & Filter -->
+    <div class="mt-6 flex flex-col sm:flex-row gap-4">
+      <div class="relative flex-grow">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+          </svg>
+        </div>
+        <input
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearchChange()"
+          class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-brand-500 focus:border-brand-500 sm:text-sm"
+          placeholder="Pesquisar por nome, descrição ou ingredientes..."
+          type="text"/>
+      </div>
+      <select
+        [(ngModel)]="selectedTag"
+        (ngModelChange)="onFilterChange()"
+        class="block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-brand-500 focus:border-brand-500 sm:text-sm rounded-md">
+        <option value="">Todas as Tags</option>
+        <option *ngFor="let tag of allTags" [value]="tag">{{ tag }}</option>
+      </select>
+    </div>
+  </section>
+
+  <section class="bg-white shadow overflow-hidden sm:rounded-lg border border-gray-200">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Nome do Item</th>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Preço</th>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Tags</th>
+            <th class="relative px-6 py-3"><span class="sr-only">Ações</span></th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <tr *ngFor="let item of paginatedItems" class="hover:bg-gray-50 transition-colors">
+            <td class="px-6 py-4">
+              <div class="flex items-center">
+                <img [src]="item.imagePath || 'assets/placeholder.png'" [alt]="item.name" class="h-10 w-10 rounded-lg object-cover shrink-0">
+                <div class="ml-4">
+                  <div class="text-sm font-medium text-gray-900">{{ item.name }}</div>
+                  <div class="text-[11px] text-gray-400 truncate max-w-[200px]">{{ item.description }}</div>
+                  <div class="text-[11px] text-gray-500 italic truncate max-w-[200px]">{{ item.ingredients }}</div>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">R$ {{ item.price | number:'1.2-2' }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex gap-1 flex-wrap">
+                <span *ngFor="let tag of item.tags"
+                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                  [ngClass]="getDietaryClass(tag)">
+                  {{ tag }}
+                </span>
+                <span *ngIf="!item.tags || item.tags.length === 0" class="text-xs text-gray-400 italic">Nenhuma</span>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+              <a [routerLink]="['/items/edit', item.id]" class="text-brand-500 hover:text-brand-700 mr-4 font-bold">Editar</a>
+              <button (click)="openDeleteModal(item)" class="text-red-500 hover:text-red-700 font-bold transition-colors" type="button">Excluir</button>
+            </td>
+          </tr>
+          <tr *ngIf="filteredItems.length === 0 && !loading">
+            <td colspan="4" class="px-6 py-12 text-center text-sm text-gray-400">
+              <svg class="mx-auto h-10 w-10 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+              </svg>
+              Nenhum item encontrado.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+      <div class="flex-1 flex items-center justify-between">
+        <p class="text-sm text-gray-700">
+          Mostrando
+          <span class="font-medium">{{ filteredItems.length === 0 ? 0 : (currentPage - 1) * pageSize + 1 }}</span>–<span class="font-medium">{{ Math.min(currentPage * pageSize, filteredItems.length) }}</span>
+          de <span class="font-medium">{{ filteredItems.length }}</span> resultados
+        </p>
+        <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" *ngIf="totalPages > 1">
+          <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1"
+            class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed">
+            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+              <path clip-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" fill-rule="evenodd"></path>
+            </svg>
+          </button>
+          <button *ngFor="let page of pageNumbers" (click)="goToPage(page)"
+            class="relative inline-flex items-center px-4 py-2 border text-sm font-medium transition-colors"
+            [ngClass]="page === currentPage ? 'z-10 bg-brand-50 border-brand-500 text-brand-600' : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'">
+            {{ page }}
+          </button>
+          <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages"
+            class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed">
+            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+              <path clip-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" fill-rule="evenodd"></path>
+            </svg>
+          </button>
+        </nav>
+      </div>
+    </div>
+  </section>
+</main>
+
+<app-confirm-modal
+  [isOpen]="showDeleteModal"
+  title="Excluir Item"
+  [message]="'Deseja excluir \'' + itemToDelete?.name + '\'? Esta ação não pode ser desfeita.'"
+  confirmText="Excluir"
+  (confirm)="onConfirmDelete()"
+  (cancel)="closeDeleteModal()">
+</app-confirm-modal>
